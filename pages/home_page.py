@@ -37,6 +37,7 @@ class HomePage:
         #     self.page.click(self.book_appointment_link)
 
         new_page = event.value
-        new_page.wait_for_load_state("networkidle", timeout=100000)
+        #added timeout of 500 second as login page takes lots of time to load even when load manually
+        new_page.wait_for_load_state("networkidle", timeout=500000)
         print(f"Navigated to login page: {new_page.url}")
         return new_page

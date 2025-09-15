@@ -1,27 +1,44 @@
 from playwright.sync_api import Page
+from utils.captcha_solver import CaptchaSolver
+import time
+
 
 class LoginPage:
     def __init__(self, page: Page):
         self.page = page
-        self.email_fields = "input[type='text']"
+        self.email_field = "div.mb-3:has(label:has-text('Email')) input[type='text']:visible"
         self.verify_button = "button#btnVerify"
+        self.captcha_selector = "#captcha-main-div"
+        self.password_field = "div:has(label:has-text('Password')) input[type='password']"
+        self.submit_button = "button[type='submit']"
+
+        # ✅ No API key passed here anymore
+        self.solver = CaptchaSolver()
 
     def is_loaded(self):
         return self.page.is_visible(self.verify_button)
 
     def enter_email(self, email: str):
-        # Find all email fields
-        fields = self.page.query_selector_all(self.email_fields)
+        self.page.locator(self.email_field).fill(email)
 
-        for field in fields:
-            # Only fill if the field is enabled (not disabled)
-            if field.is_enabled():
-                field.fill(email)
-                print(f"Entered email into field with id={field.get_attribute('id')}")
-                break
-        else:
-            raise Exception("No enabled email field found.")
-
-    def submit(self):
+    def click_verify(self):
         self.page.click(self.verify_button)
-        print("Verify button clicked.")
+        time.sleep(3)  # let page transition
+
+    def solve_captcha(self):
+        """
+        Delegates captcha solving to CaptchaSolver (coordinates type).
+        """
+        self.page.wait_for_load_state("networkidle", timeout=60000)
+        self.page.wait_for_selector(self.captcha_selector)
+        self.solver.solve_coordinates(self.page, self.captcha_selector)
+        print("Captcha solved successfully.")
+
+    def enter_password(self, password: str):
+        field = self.page.locator(self.password_field).first
+        field.fill(password)
+
+    def submit_form(self):
+        self.page.click(self.submit_button)
+        time.sleep(3)
+        print("Form submitted.")
