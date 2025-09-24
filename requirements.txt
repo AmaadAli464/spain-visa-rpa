@@ -1,2 +1,6 @@
 playwright
 PyQt5
+2captcha-python
+pillow    
+pytesseract 
+opencv-python

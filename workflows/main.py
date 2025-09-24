@@ -23,9 +23,11 @@ def run_main_workflow():
         login.click_verify()
         login.solve_captcha()
         login.enter_password("Razzi@786")
-        login.submit_form()
+        login.page.wait_for_timeout(1000)
+        # login.submit_form()
 
         
     finally:
-        browser.close()
-        playwright.stop()
+        print("hi")
+        # browser.close()
+        # playwright.stop()
