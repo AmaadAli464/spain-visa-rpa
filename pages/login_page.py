@@ -1,6 +1,6 @@
 from playwright.sync_api import Page
-# from utils.captcha_solver import CaptchaSolver
-from utils.local_captcha_solver import LocalCaptchaSolver
+from utils.captcha_solver import CaptchaSolver
+# from utils.local_captcha_solver import LocalCaptchaSolver
 import time
 
 
@@ -13,8 +13,8 @@ class LoginPage:
         self.password_field = "div:has(label:has-text('Password')) input[type='password']:visible"
         self.submit_button = "button[type='submit']:visible"
 
-        # self.solver = CaptchaSolver()
-        self.solver = LocalCaptchaSolver()
+        self.solver = CaptchaSolver()
+        # self.solver = LocalCaptchaSolver(tesseract_cmd=r"C:\Users\amaad.ali\AppData\Local\Programs\Tesseract-OCR\tesseract.exe")
 
     def is_loaded(self):
         return self.page.is_visible(self.verify_button)
@@ -33,8 +33,8 @@ class LoginPage:
         self.page.wait_for_load_state("networkidle", timeout=60000)
         self.page.wait_for_selector(self.captcha_selector)
 
-        self.solver.solve_grid_captcha(self.page)
-        # self.solver.solve_coordinates(self.page, self.captcha_selector)
+        # self.solver.solve_grid_captcha(self.page)
+        self.solver.solve_coordinates(self.page, self.captcha_selector)
         print("Captcha solved successfully.")
 
     def enter_password(self, password: str):
